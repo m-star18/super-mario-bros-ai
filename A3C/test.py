@@ -17,7 +17,7 @@ def get_args():
     parser.add_argument("--stage", type=int, default=1)
     parser.add_argument("--action_type", type=str, default="complex")
     parser.add_argument("--saved_path", type=str, default="../trained_models")
-    parser.add_argument("--output_path", type=str, default="output")
+    parser.add_argument("--output_path", type=str, default="../sample")
     args = parser.parse_args()
 
     return args
