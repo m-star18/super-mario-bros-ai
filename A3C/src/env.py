@@ -65,3 +65,10 @@ class CustomReward(Wrapper):
     def reset(self):
         self.curr_score = 0
         return process_frame(self.env.reset())
+
+
+class CustomSkipFrame(Wrapper):
+    def __init__(self, env, skip=4):
+        super(CustomSkipFrame, self).__init__(env)
+        self.observation_space = Box(low=0, high=255, shape=(4, 84, 84))
+        self.skip = skip
