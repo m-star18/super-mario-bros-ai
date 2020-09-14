@@ -92,3 +92,22 @@ def local_train(index, opt, global_model, optimizer, save=False):
             R = R * opt.gamma + reward
             critic_loss = critic_loss + (R - value) ** 2 / 2
             entropy_loss = entropy_loss + entropy
+
+        total_loss = -actor_loss + critic_loss - opt.beta * entropy_loss
+        writer.add_scalar(f"Train_{index}/Loss", total_loss, curr_episode)
+        optimizer.zero_grad()
+        total_loss.backward()
+
+        for local_param, global_param in zip(local_model.parameters(), global_model.parameters()):
+            if global_param.grad is not None:
+                break
+            global_param._grad = local_param.grad
+
+        optimizer.step()
+
+        if curr_episode == int(opt.num_global_steps / opt.num_local_steps):
+            print(f"Training process {index} terminated")
+            if save:
+                end_time = timeit.default_timer()
+                print('The code runs for %.2f s ' % (end_time - start_time))
+            return
