@@ -95,3 +95,25 @@ class CustomSkipFrame(Wrapper):
         states = np.concatenate([state for _ in range(self.skip)], 0)[None, :, :, :]
 
         return states.astype(np.float32)
+
+
+def create_train_env(world, stage, action_type, output_path=None):
+    env = gym_super_mario_bros.make(f"SuperMarioBros-{world}-{stage}-v0")
+
+    if output_path:
+        monitor = Monitor(256, 240, output_path)
+    else:
+        monitor = None
+
+    if action_type == "right":
+        actions = RIGHT_ONLY
+    elif action_type == "simple":
+        actions = SIMPLE_MOVEMENT
+    else:
+        actions = COMPLEX_MOVEMENT
+
+    env = JoypadSpace(env, actions)
+    env = CustomReward(env, monitor)
+    env = CustomSkipFrame(env)
+
+    return env, env.observation_space.shape[0], len(actions)
