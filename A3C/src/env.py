@@ -32,3 +32,15 @@ def process_frame(frame):
 
     else:
         return np.zeros((1, 84, 84))
+
+
+class CustomReward(Wrapper):
+    def __init__(self, env=None, monitor=None):
+        super(CustomReward, self).__init__(env)
+        self.observation_space = Box(low=0, high=255, shape=(1, 84, 84))
+        self.curr_score = 0
+
+        if monitor:
+            self.monitor = monitor
+        else:
+            self.monitor = None
