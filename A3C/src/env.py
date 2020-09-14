@@ -61,3 +61,7 @@ class CustomReward(Wrapper):
                 reward -= 50
 
         return state, reward / 10., done, info
+
+    def reset(self):
+        self.curr_score = 0
+        return process_frame(self.env.reset())
