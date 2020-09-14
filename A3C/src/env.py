@@ -72,3 +72,20 @@ class CustomSkipFrame(Wrapper):
         super(CustomSkipFrame, self).__init__(env)
         self.observation_space = Box(low=0, high=255, shape=(4, 84, 84))
         self.skip = skip
+
+    def step(self, action):
+        total_reward = 0
+        states = []
+        state, reward, done, info = self.env.step(action)
+
+        for i in range(self.skip):
+            if not done:
+                state, reward, done, info = self.env.step(action)
+                total_reward += reward
+                states.append(state)
+
+            else:
+                states.append(state)
+        states = np.concatenate(states, 0)[None, :, :, :]
+
+        return states.astype(np.float32), reward, done, info
