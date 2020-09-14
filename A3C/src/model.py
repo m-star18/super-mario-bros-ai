@@ -13,3 +13,12 @@ class ActorCritic(nn.Module):
         self.critic_linear = nn.Linear(512, 1)
         self.actor_linear = nn.Linear(512, num_actions)
         self._initialize_weights()
+
+    def _initialize_weights(self):
+        for module in self.modules():
+            if isinstance(module, nn.Conv2d) or isinstance(module, nn.Linear):
+                nn.init.xavier_uniform_(module.weight)
+                nn.init.constant_(module.bias, 0)
+            elif isinstance(module, nn.LSTMCell):
+                nn.init.constant_(module.bias_ih, 0)
+                nn.init.constant_(module.bias_hh, 0)
