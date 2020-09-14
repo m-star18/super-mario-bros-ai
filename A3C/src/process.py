@@ -44,3 +44,31 @@ def local_train(index, opt, global_model, optimizer, save=False):
         values = []
         rewards = []
         entropies = []
+
+        for _ in range(opt.num_local_steps):
+            curr_step += 1
+            logits, value, h_0, c_0 = local_model(state, h_0, c_0)
+            policy = F.softmax(logits, dim=1)
+            log_policy = F.log_softmax(logits, dim=1)
+            entropy = -(policy * log_policy).sum(1, keepdim=True)
+
+            m = Categorical(policy)
+            action = m.sample().item()
+
+            state, reward, done, _ = env.step(action)
+            state = torch.from_numpy(state)
+
+            if curr_step > opt.num_global_steps:
+                done = True
+
+            if done:
+                curr_step = 0
+                state = torch.from_numpy(env.reset())
+
+            values.append(value)
+            log_policies.append(log_policy[0, action])
+            rewards.append(reward)
+            entropies.append(entropy)
+
+            if done:
+                break
