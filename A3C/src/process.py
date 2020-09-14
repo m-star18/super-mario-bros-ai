@@ -10,6 +10,17 @@ from src.env import create_train_env
 from src.model import ActorCritic
 
 
+def local_test(index, opt, global_model):
+    torch.manual_seed(123 + index)
+    env, num_states, num_actions = create_train_env(opt.world, opt.stage, opt.action_type)
+    local_model = ActorCritic(num_states, num_actions)
+    local_model.eval()
+    state = torch.from_numpy(env.reset())
+    done = True
+    curr_step = 0
+    actions = deque(maxlen=opt.max_actions)
+
+
 def local_train(index, opt, global_model, optimizer, save=False):
     torch.manual_seed(123 + index)
     if save:
