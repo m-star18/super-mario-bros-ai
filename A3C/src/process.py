@@ -6,8 +6,8 @@ import torch.nn.functional as F
 from tensorboardX import SummaryWriter
 from torch.distributions import Categorical
 
-from src.env import create_train_env
-from src.model import ActorCritic
+from env import create_train_env
+from model import ActorCritic
 
 
 def local_test(index, opt, global_model):
@@ -68,8 +68,7 @@ def local_train(index, opt, global_model, optimizer, save=False):
     while True:
         if save:
             if curr_episode % opt.save_interval == 0 and curr_episode > 0:
-                torch.save(global_model.state_dict(),
-                           f"{opt.saved_path}/a3c_super_mario_bros_{opt.world}_{opt.stage}")
+                torch.save(global_model.state_dict(), f"{opt.saved_path}/a3c_super_mario_bros_{opt.world}_{opt.stage}")
             print(f"Now Process {index}. Episode {curr_episode}")
         curr_episode += 1
         local_model.load_state_dict(global_model.state_dict())
